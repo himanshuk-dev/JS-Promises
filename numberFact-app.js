@@ -30,7 +30,7 @@ form.addEventListener("submit", (event) => {
 
 function generateCard(fact) {
   const card = document.createElement("div");
-  card.classList.add("card", "m-4", "bg-dark", "text-light");
+  card.classList.add("card", "m-2", "bg-dark", "text-light");
   card.style.width = "18rem";
   card.style.display = "inline-block";
 
