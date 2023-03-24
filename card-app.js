@@ -26,28 +26,62 @@ axios.get(`${baseURL}/new/draw/`).then((res) => {
 
 /***** Solution 3 *****/
 let btn = document.getElementById("button");
+let cardContainer = document.querySelector("#card-container");
+let deckId;
 
-btn.addEventListener("click", function setup() {
-  let cardContainer = document.querySelector("#card-container");
+function setup() {
+  if (deckId) {
+    axios
+      .get(`${baseURL}/${deckId}/draw/`)
+      .then((res) => {
+        console.log("remaining cards", res.data.remaining);
+        let cardSrc = res.data.cards[0].image;
+        let angle = Math.random() * 90 - 45;
+        let randomX = Math.random() * 40 - 20;
+        let randomY = Math.random() * 40 - 20;
+        let img = document.createElement("img");
+        img.setAttribute("src", cardSrc);
+        img.setAttribute(
+          "style",
+          `transform: translate(${randomX}px, ${randomY}px) rotate(${angle}deg)`
+        );
+        cardContainer.append(img);
 
-  axios
-    .get(`${baseURL}/new/shuffle/`)
-    .then((res) => {
-      return axios.get(`${baseURL}/${res.data.deck_id}/draw/`);
-    })
-    .then((res) => {
-      console.log("button", res);
-      let cardSrc = res.data.cards[0].image;
-      let angle = Math.random() * 90 - 45;
-      let randomX = Math.random() * 40 - 20;
-      let randomY = Math.random() * 40 - 20;
-      let img = document.createElement("img");
-      img.setAttribute("src", cardSrc);
+        // Remove button if no remaining cards in the deck
+        if (res.data.remaining === 0) {
+          btn.remove();
+        }
+      })
+      .catch((err) => console.log(err));
+  } else {
+    axios
+      .get(`${baseURL}/new/shuffle/`)
+      .then((res) => {
+        console.log("deck id", res.data.deck_id);
+        deckId = res.data.deck_id;
+        return axios.get(`${baseURL}/${deckId}/draw/`);
+      })
+      .then((res) => {
+        console.log("remaining cards", res.data.remaining);
+        let cardSrc = res.data.cards[0].image;
+        let angle = Math.random() * 90 - 45;
+        let randomX = Math.random() * 40 - 20;
+        let randomY = Math.random() * 40 - 20;
+        let img = document.createElement("img");
+        img.setAttribute("src", cardSrc);
+        img.setAttribute(
+          "style",
+          `transform: translate(${randomX}px, ${randomY}px) rotate(${angle}deg)`
+        );
+        cardContainer.append(img);
 
-      img.setAttribute(
-        "style",
-        `transform: translate(${randomX}px, ${randomY}px) rotate(${angle}deg)`
-      );
-      cardContainer.append(img);
-    });
-});
+        // Remove button if no remaining cards in the deck
+        if (res.data.remaining === 0) {
+          btn.remove();
+        }
+      })
+      .catch((err) => console.log(err));
+  }
+}
+
+btn.addEventListener("click", setup);
