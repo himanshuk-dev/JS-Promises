@@ -1,26 +1,51 @@
 // global variables
 let cardHolder = document.getElementById("container");
 const form = document.getElementById("form");
+let checkbox = document.getElementById("checkbox").value;
 
 form.addEventListener("submit", (event) => {
   // Prevent the default form submission behavior
   event.preventDefault();
 
-  // Get the number and convert to integer
-  const number = document.getElementById("number").value;
+  // Get the number from input field
+  let number = document.getElementById("number").value;
 
+  // check if invalid input
   if (!number) {
-    alert("Please enter a number.");
+    alert("Please enter a valid number.");
+    form.reset();
     return;
   }
 
+  /*******  Solution 1  *******/
   //API URL
-  let url = `http://numbersapi.com/${number}`;
+  let url = `http://numbersapi.com/${number}?json`;
 
   //   Promise to get data from API
-  axios.get(url).then((res) => {
-    generateCard(res.data);
-  });
+  if (number.length < 2) {
+    axios.get(url).then((res) => {
+      generateCard(res.data.text);
+    });
+  }
+  /******* End of Solution 1 ********/
+
+  /*******  Solution 2  *******/
+
+  if (number.length > 1) {
+    axios.get(url).then((res) => {
+      let facts = res.data;
+      multipleInputs(facts);
+    });
+
+    function multipleInputs(facts) {
+      let factArray = Object.values(facts);
+      factArray.forEach((fact) => {
+        generateCard(fact);
+      });
+    }
+  }
+
+  /******* End of Solution 2  *******/
 
   //   reset form after submit
   form.reset();
