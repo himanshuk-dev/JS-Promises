@@ -1,7 +1,7 @@
 // global variables
 let cardHolder = document.getElementById("container");
 const form = document.getElementById("form");
-let checkbox = document.getElementById("checkbox").value;
+let checkbox = document.getElementById("checkbox");
 
 form.addEventListener("submit", (event) => {
   // Prevent the default form submission behavior
@@ -22,7 +22,7 @@ form.addEventListener("submit", (event) => {
   let url = `http://numbersapi.com/${number}?json`;
 
   //   Promise to get data from API
-  if (number.length < 2) {
+  if (number.length < 2 && !checkbox.checked) {
     axios.get(url).then((res) => {
       generateCard(res.data.text);
     });
@@ -31,7 +31,7 @@ form.addEventListener("submit", (event) => {
 
   /*******  Solution 2  *******/
 
-  if (number.length > 1) {
+  if (number.length > 1 && !checkbox.checked) {
     axios.get(url).then((res) => {
       let facts = res.data;
       multipleInputs(facts);
@@ -46,6 +46,25 @@ form.addEventListener("submit", (event) => {
   }
 
   /******* End of Solution 2  *******/
+
+  /*******  Solution 3  *******/
+
+  if (checkbox.checked) {
+    number = Array(4).fill(number);
+    axios.get(url).then((res) => {
+      let facts = res.data;
+      multipleFacts(facts);
+    });
+
+    function multipleFacts(facts) {
+      let factArray = Object.values(facts);
+      factArray.forEach((fact) => {
+        generateCard(fact);
+      });
+    }
+  }
+
+  /*******  End of Solution 3  *******/
 
   //   reset form after submit
   form.reset();
