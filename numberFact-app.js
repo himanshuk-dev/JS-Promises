@@ -36,13 +36,6 @@ form.addEventListener("submit", (event) => {
       let facts = res.data;
       multipleInputs(facts);
     });
-
-    function multipleInputs(facts) {
-      let factArray = Object.values(facts);
-      factArray.forEach((fact) => {
-        generateCard(fact);
-      });
-    }
   }
 
   /******* End of Solution 2  *******/
@@ -50,18 +43,16 @@ form.addEventListener("submit", (event) => {
   /*******  Solution 3  *******/
 
   if (checkbox.checked) {
-    number = Array(4).fill(number);
-    axios.get(url).then((res) => {
-      let facts = res.data;
-      multipleFacts(facts);
+    Promise.all([
+      axios.get(`${url}/${number}?json`),
+      axios.get(`${url}/${number}?json`),
+      axios.get(`${url}/${number}?json`),
+      axios.get(`${url}/${number}?json`),
+    ]).then((res) => {
+      let facts = [res[0].data, res[1].data, res[2].data, res[3].data];
+      console.log(facts);
+      multipleInputs(facts);
     });
-
-    function multipleFacts(facts) {
-      let factArray = Object.values(facts);
-      factArray.forEach((fact) => {
-        generateCard(fact);
-      });
-    }
   }
 
   /*******  End of Solution 3  *******/
@@ -69,6 +60,14 @@ form.addEventListener("submit", (event) => {
   //   reset form after submit
   form.reset();
 });
+
+// Function to generate array from API response
+function multipleInputs(facts) {
+  let factArray = Object.values(facts);
+  factArray.forEach((fact) => {
+    generateCard(fact);
+  });
+}
 
 // Generate information card
 
